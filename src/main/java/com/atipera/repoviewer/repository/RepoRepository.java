@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class RepoRepository implements IRepoRepository {
@@ -24,17 +23,21 @@ public class RepoRepository implements IRepoRepository {
     public List<RepoResponse> getUserRepositories(String username) {
         String apiUrl = "https://api.github.com/users/{username}/repos".replace("{username}", username);
         Repo[] repositories = restTemplate.getForObject(apiUrl, Repo[].class);
+        List<RepoResponse> repoResponses = new ArrayList<>();
 
-        return Optional.ofNullable(repositories)
-            .stream()
-            .flatMap(Arrays::stream)
-            .filter(repository -> !repository.fork())
-            .map(repository -> new RepoResponse(
-                repository.name(),
-                repository.owner().login(),
-                getBranches(username, repository.name())
-            ))
-            .collect(Collectors.toList());
+        if(repositories != null) {
+            for(Repo repository : repositories) {
+                if(!repository.fork()) {
+                    repoResponses.add(new RepoResponse(
+                        repository.name(),
+                        repository.owner().login(),
+                        getBranches(username, repository.name())
+                    ));
+                }
+            }
+        }
+
+        return repoResponses;
     }
 
     @Override
@@ -44,11 +47,14 @@ public class RepoRepository implements IRepoRepository {
             .replace("{repo}", repoName);
 
         Branch[] branches = restTemplate.getForObject(apiUrl, Branch[].class);
+        List<BranchResponse> branchResponses = new ArrayList<>();
 
-        return Optional.ofNullable(branches)
-            .stream()
-            .flatMap(Arrays::stream)
-            .map(branch -> new BranchResponse(branch.name(), branch.commit().sha()))
-            .collect(Collectors.toList());
+        if (branches != null) {
+            for (Branch branch : branches) {
+                branchResponses.add(new BranchResponse(branch.name(), branch.commit().sha()));
+            }
+        }
+
+        return branchResponses;
     }
 }
