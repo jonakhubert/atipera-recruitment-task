@@ -3,7 +3,6 @@ package com.atipera.repoviewer.controller;
 import com.atipera.repoviewer.model.RepoResponse;
 import com.atipera.repoviewer.service.RepoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +19,11 @@ public class RepoController {
         this.repoService = repoService;
     }
 
-    @GetMapping(
-        path = "{username}"
-    )
+    @GetMapping(path = "{username}")
     public ResponseEntity<List<RepoResponse>> getUserRepositories(
         @PathVariable String username,
         @RequestHeader(value = "Accept", defaultValue = "application/json") String acceptHeader
     ) {
         return ResponseEntity.ok(repoService.getUserRepositories(username));
-    } // TODO: accept header exception
+    }
 }
