@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class RepoRepository implements IRepoRepository {
@@ -21,41 +21,34 @@ public class RepoRepository implements IRepoRepository {
     }
 
     @Override
-    public List<RepoResponse> getRepositoriesByUsername(String username) {
+    public List<RepoResponse> getUserRepositories(String username) {
         String apiUrl = "https://api.github.com/users/{username}/repos".replace("{username}", username);
         Repo[] repositories = restTemplate.getForObject(apiUrl, Repo[].class);
-        List<RepoResponse> repoResponses = new ArrayList<>();
 
-        if(repositories != null) {
-            for(Repo repository : repositories) {
-                if(!repository.fork()) {
-                    repoResponses.add(new RepoResponse(
-                        repository.name(),
-                        repository.owner().login(),
-                        getBranchesInfo(username, repository.name())
-                    ));
-                }
-            }
-        }
-
-        return repoResponses;
+        return Optional.ofNullable(repositories)
+            .stream()
+            .flatMap(Arrays::stream)
+            .filter(repository -> !repository.fork())
+            .map(repository -> new RepoResponse(
+                repository.name(),
+                repository.owner().login(),
+                getBranches(username, repository.name())
+            ))
+            .collect(Collectors.toList());
     }
 
     @Override
-    public List<BranchInfo> getBranchesInfo(String username, String repoName) {
+    public List<BranchResponse> getBranches(String username, String repoName) {
         String apiUrl = "https://api.github.com/repos/{username}/{repo}/branches"
             .replace("{username}", username)
             .replace("{repo}", repoName);
 
         Branch[] branches = restTemplate.getForObject(apiUrl, Branch[].class);
-        List<BranchInfo> branchInfos = new ArrayList<>();
 
-        if (branches != null) {
-            for (Branch branch : branches) {
-                branchInfos.add(new BranchInfo(branch.name(), branch.commit().sha()));
-            }
-        }
-
-        return branchInfos;
+        return Optional.ofNullable(branches)
+            .stream()
+            .flatMap(Arrays::stream)
+            .map(branch -> new BranchResponse(branch.name(), branch.commit().sha()))
+            .collect(Collectors.toList());
     }
 }
