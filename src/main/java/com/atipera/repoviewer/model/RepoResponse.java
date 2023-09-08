@@ -7,5 +7,5 @@ import java.util.List;
 public record RepoResponse(
         @JsonProperty("name") String repositoryName,
         @JsonProperty("owner_login") String login,
-        @JsonProperty("branches") List<BranchInfo> branches
+        @JsonProperty("branches") List<BranchResponse> branches
 ) {}
