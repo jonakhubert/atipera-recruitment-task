@@ -18,6 +18,6 @@ public class RepoService {
     }
 
     public List<RepoResponse> getUserRepositories(String username) {
-        return repoRepository.getRepositoriesByUsername(username);
+        return repoRepository.getUserRepositories(username);
     }
 }
