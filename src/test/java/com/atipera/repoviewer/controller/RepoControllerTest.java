@@ -28,8 +28,8 @@ public class RepoControllerTest {
     @Test
     public void getUserRepositories_ExistingUser_ListOfRepoResponse() throws Exception {
         // given
-        String username = "user";
-        List<RepoResponse> repoResponses = List.of(
+        var username = "user";
+        var repoResponses = List.of(
             new RepoResponse("repo1", "user1", null),
             new RepoResponse("repo2", "user1", null)
         );
@@ -50,7 +50,7 @@ public class RepoControllerTest {
     @Test
     public void getUserRepositories_UserWithNoRepositories_EmptyList() throws Exception {
         // given
-        String username = "userWithNoRepos";
+        var username = "userWithNoRepos";
 
         when(repoService.getUserRepositories(username)).thenReturn(Collections.emptyList());
 
@@ -65,7 +65,7 @@ public class RepoControllerTest {
     @Test
     public void getUserRepositories_NoAcceptHeader_ApplicationJsonAsDefault() throws Exception {
         // given
-        String username = "userWithNoRepos";
+        var username = "userWithNoRepos";
 
         // then
         mockMvc.perform(get("/api/repository-management/" + username))
@@ -76,7 +76,7 @@ public class RepoControllerTest {
     @Test
     public void getUserRepositories_XmlAcceptHeader_Status406() throws Exception {
         // given
-        String username = "user";
+        var username = "user";
 
         // then
         mockMvc.perform(get("/api/repository-management/" + username)

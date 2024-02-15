@@ -34,18 +34,18 @@ public class RepoRepositoryTest {
     @Test
     public void getUserRepositories_ExistingUser_ListOfRepositories() {
         // given
-        String username = "user";
+        var username = "user";
         Repo[] repositories = {
             new Repo("repo1", new Owner("user1"), false),
             new Repo("repo2", new Owner("user2"), true)
         };
 
-        Branch[] branches = {
+        var branches = new Branch[] {
             new Branch("branch1", new Commit("sha1")),
             new Branch("branch2", new Commit("sha2"))
         };
 
-        List<RepoResponse> expected = List.of(
+        var expected = List.of(
             new RepoResponse("repo1", "user1", List.of(
                 new BranchResponse("branch1", "sha1"),
                 new BranchResponse("branch2", "sha2")
@@ -56,7 +56,7 @@ public class RepoRepositoryTest {
         when(restTemplate.getForObject(anyString(), eq(Branch[].class))).thenReturn(branches);
 
         // when
-        List<RepoResponse> result = underTest.getUserRepositories(username);
+        var result = underTest.getUserRepositories(username);
 
         // then
         assertEquals(1, result.size());
@@ -67,12 +67,12 @@ public class RepoRepositoryTest {
 
     @Test
     public void getUserRepositories_UserWithNoRepositories_EmptyList() {
-        String username = "noReposUser";
         // given
+        var username = "noReposUser";
         when(restTemplate.getForObject(anyString(), eq(Repo[].class))).thenReturn(new Repo[]{});
 
         // when
-        List<RepoResponse> result = underTest.getUserRepositories(username);
+        var result = underTest.getUserRepositories(username);
 
         // then
         assertEquals(0, result.size());
@@ -83,8 +83,8 @@ public class RepoRepositoryTest {
     @Test
     public void getUserRepositories_UserWithOnlyForkRepositories_EmptyList() {
         // given
-        String username = "forkUser";
-        Repo[] repositories = {
+        var username = "forkUser";
+        var repositories = new Repo[] {
             new Repo("repo1", new Owner("user1"), true),
             new Repo("repo2", new Owner("user2"), true)
         };
@@ -92,7 +92,7 @@ public class RepoRepositoryTest {
         when(restTemplate.getForObject(anyString(), eq(Repo[].class))).thenReturn(repositories);
 
         // when
-        List<RepoResponse> result = underTest.getUserRepositories(username);
+        var result = underTest.getUserRepositories(username);
 
         // then
         assertEquals(0, result.size());
@@ -103,7 +103,7 @@ public class RepoRepositoryTest {
     @Test
     public void getUserRepositories_NonExistingUser_HttpClientErrorException() {
         // given
-        String username = "nonExistingUser";
+        var username = "nonExistingUser";
         when(restTemplate.getForObject(anyString(), eq(Repo[].class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "User not found."));
 
@@ -115,14 +115,14 @@ public class RepoRepositoryTest {
     @Test
     public void getBranches_ExistingUserAndRepo_Branches() {
         // given
-        String username = "user";
-        String repoName = "repo";
-        Branch[] branches = {
+        var username = "user";
+        var repoName = "repo";
+        var branches = new Branch[] {
             new Branch("branch1", new Commit("sha1")),
             new Branch("branch2", new Commit("sha2"))
         };
 
-        List<BranchResponse> expected = List.of(
+        var expected = List.of(
             new BranchResponse("branch1", "sha1"),
             new BranchResponse("branch2", "sha2")
         );
@@ -130,7 +130,7 @@ public class RepoRepositoryTest {
         when(restTemplate.getForObject(anyString(), eq(Branch[].class))).thenReturn(branches);
 
         // when
-        List<BranchResponse> result = underTest.getBranches(username, repoName);
+        var result = underTest.getBranches(username, repoName);
 
         // then
         assertEquals(2, result.size());
@@ -141,14 +141,14 @@ public class RepoRepositoryTest {
     @Test
     public void getBranches_RepoWithNoBranches_EmptyBranchList() {
         // given
-        String username = "user";
-        String repoName = "repo";
+        var username = "user";
+        var repoName = "repo";
 
-        Branch[] branches = {};
+        var branches = new Branch[] {};
         when(restTemplate.getForObject(anyString(), eq(Branch[].class))).thenReturn(branches);
 
         // when
-        List<BranchResponse> result = underTest.getBranches(username, repoName);
+        var result = underTest.getBranches(username, repoName);
 
         // then
         assertEquals(0, result.size());

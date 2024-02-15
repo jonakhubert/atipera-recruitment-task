@@ -29,8 +29,8 @@ public class RepoServiceTest {
     @Test
     public void getUserRepositories_ExistingUser_ListOfRepoResponse() {
         // given
-        String username = "user";
-        List<RepoResponse> expected = List.of(
+        var username = "user";
+        var expected = List.of(
             new RepoResponse("repo1", "user1", null),
             new RepoResponse("repo2", "user1", null)
         );
@@ -38,7 +38,7 @@ public class RepoServiceTest {
         when(repoRepository.getUserRepositories(username)).thenReturn(expected);
 
         // when
-        List<RepoResponse> result = underTest.getUserRepositories(username);
+        var result = underTest.getUserRepositories(username);
 
         // then
         assertEquals(expected, result);
@@ -48,11 +48,11 @@ public class RepoServiceTest {
     @Test
     public void getUserRepositories_UserWithNoRepositories_EmptyList() {
         // given
-        String username = "user";
+        var username = "user";
         when(repoRepository.getUserRepositories(username)).thenReturn(Collections.emptyList());
 
         // when
-        List<RepoResponse> result = underTest.getUserRepositories(username);
+        var result = underTest.getUserRepositories(username);
 
         // then
         assertEquals(Collections.emptyList(), result);
@@ -62,11 +62,11 @@ public class RepoServiceTest {
     @Test
     public void getUserRepositories_UserWithOnlyForkRepositories_EmptyList() {
         // given
-        String username = "forkUser";
+        var username = "forkUser";
         when(repoRepository.getUserRepositories(anyString())).thenReturn(Collections.emptyList());
 
         // when
-        List<RepoResponse> result = underTest.getUserRepositories(username);
+        var result = underTest.getUserRepositories(username);
 
         // then
         assertEquals(Collections.emptyList(), result);
@@ -76,7 +76,7 @@ public class RepoServiceTest {
     @Test
     public void getUserRepositories_NonExistingUser_HttpClientErrorException() {
         // given
-        String username = "nonExistingUser";
+        var username = "nonExistingUser";
         when(repoRepository.getUserRepositories(anyString()))
             .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "User not found."));
 

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -20,7 +19,7 @@ public class GlobalExceptionHandler {
         HttpClientErrorException ex,
         HttpServletRequest request
     ) {
-        ApiError apiError = new ApiError(
+        var apiError = new ApiError(
             HttpStatus.NOT_FOUND.value(),
             "User not found."
         );
@@ -33,7 +32,7 @@ public class GlobalExceptionHandler {
         HttpMediaTypeNotAcceptableException ex,
         HttpServletRequest request
     ) {
-        ApiError apiError = new ApiError(
+        var apiError = new ApiError(
             HttpStatus.NOT_ACCEPTABLE.value(),
             request.getHeader("Accept") + " not acceptable."
         );
@@ -42,7 +41,7 @@ public class GlobalExceptionHandler {
     }
 
     private HttpHeaders setHeaders() {
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return headers;
